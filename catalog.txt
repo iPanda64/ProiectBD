@@ -1,0 +1,25 @@
+
+descriere                           nume                                prenume                             nota_finala_curs                    
+Matematica Aplicata                 Popescu                             Ana                                 5.7000                              
+Matematica Aplicata                 Ionescu                             George                              10.9000                             
+Matematica Aplicata                 Marinescu                           Ioana                               13.8000                             
+Matematica Aplicata                 Dumitrescu                          Alex                                5.8000                              
+Matematica Aplicata                 Popa                                Bianca                              5.0000                              
+Matematica Aplicata                 Grigore                             Daniel                              11.6000                             
+Matematica Aplicata                 Serban                              Florin                              6.5000                              
+Matematica Aplicata                 Avram                               Corina                              10.6000                             
+Algoritmi si Structuri de Date      Tudor                               Maria                               8.0000                              
+Algoritmi si Structuri de Date      Ilie                                Cristian                            5.6000                              
+Algoritmi si Structuri de Date      Radulescu                           Laura                               8.3000                              
+Algoritmi si Structuri de Date      Petrescu                            Marius                              8.9000                              
+Algoritmi si Structuri de Date      Barbu                               Razvan                              6.4000                              
+Algoritmi si Structuri de Date      Lupu                                Cristina                            4.3000                              
+Algoritmi si Structuri de Date      Tanase                              Ioan                                5.6000                              
+Algoritmi si Structuri de Date      Zamfir                              Adriana                             4.2000                              
+Inteligenta Artificiala             Popescu                             Ana                                 0.0000                              
+Inteligenta Artificiala             Ilie                                Cristian                            6.0000                              
+Inteligenta Artificiala             Georgescu                           Elena                               9.4000                              
+Inteligenta Artificiala             Mihai                               Andrei                              4.6000                              
+Inteligenta Artificiala             Radulescu                           Laura                               7.5000                              
+Inteligenta Artificiala             Petrescu                            Marius                              6.0000                              
+Inteligenta Artificiala             Popescu                             Andrei                              3.8000                              
