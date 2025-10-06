@@ -105,7 +105,7 @@ public class AdminCursuri extends Application {
         String cssPath_Panestudent="src/PlatformaStudiu/invisible.css";
         java.io.File cssFile_Panestudent = new java.io.File(cssPath_Panestudent);
         try {
-            scrollPane.getStylesheets().add(cssFile_Panestudent.toURI().toURL().toExternalForm());
+            studentPane.getStylesheets().add(cssFile_Panestudent.toURI().toURL().toExternalForm());
         }catch (Exception e1) {e1.printStackTrace();}
 
         AnchorPane.setTopAnchor(studentPane, 580.0);

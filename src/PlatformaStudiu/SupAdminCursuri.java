@@ -79,6 +79,7 @@ public class SupAdminCursuri extends Application {
         try {
             activityPane.getStylesheets().add(cssFile_activityPane.toURI().toURL().toExternalForm());
         }catch (Exception e) {e.printStackTrace();}
+
         AnchorPane.setTopAnchor(activityPane, 380.0);
         AnchorPane.setBottomAnchor(activityPane, 100.0);
         AnchorPane.setRightAnchor(activityPane, 60.0);
