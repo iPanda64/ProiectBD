@@ -1,6 +1,5 @@
 package PlatformaStudiu;
-import java.io.File;  // Import the File class
-import java.io.IOException;
+
 public class Utilizator {
     private int id;
 

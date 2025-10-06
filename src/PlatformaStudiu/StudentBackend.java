@@ -9,9 +9,9 @@ import java.util.List;
 
 public class StudentBackend extends Utilizator{
     StudentBackend(){super();
-    this.deleteAllGroups();}
+        this.deleteAllGroups();}
     StudentBackend(int id){super(id);
-    this.deleteAllGroups();}
+        this.deleteAllGroups();}
     public Table getNote()
     {
         String sqlStatement="SELECT\n" +
@@ -32,36 +32,12 @@ public class StudentBackend extends Utilizator{
                 "    curs.id;";
         return new Table(sqlStatement);
     }
-    public String getCursId(int activitate_id)
-    {
-        Query q=new Query();
-        q.init();
-        String rez=q.getAtr("select curs_id from activitate where id="+activitate_id+";");
-        q.closeConnection();
-        return rez;
-    }
-    public String getNotaCurs(int curs_id)
-    {
-        Table curs = getNote();
-        float rez=0;
-        String finaly=String.valueOf(rez);
-        for(int i=0;i<curs.getRowCount();++i)
-        {
-            if(Integer.parseInt(curs.getData(i,0))==curs_id)
-            {
-                rez=Float.parseFloat(curs.getData(i,2));
-                finaly=String.valueOf(rez);
-                break;
-            }
-        }
-        return finaly;
-    }
     public Table getActivitatiToateZilele()
     {
         String sqlStatement="select activitate.id,curs.descriere,tip,nota from activitate_nota join activitate on activitate_nota.activitate_id = activitate.id\n" +
                 "join curs on activitate.curs_id = curs.id\n" +
                 "where student_id="+this.getId()+";";
-         return new Table(sqlStatement);
+        return new Table(sqlStatement);
 
     }
     public Table getActivitatiZiCurenta()//nume curs, ponderea
@@ -77,6 +53,7 @@ public class StudentBackend extends Utilizator{
         Table ret=new Table(sqlStatement);
         return ret;
     }
+
     public void downloadActivitatiToateZilele()
     {
         String sqlStatement="SELECT\n" +
@@ -146,31 +123,6 @@ public class StudentBackend extends Utilizator{
         }
         query.closeConnection();
     }
-    public void inscriereCurs(int curs_id)
-    {
-        Query query=new Query();
-        query.init();
-        String sqlStmnt="select * from curs_student join curs on curs_student.curs_id = curs.id\n" +
-                "where curs.id='"+curs_id+"';";
-        Table checkMaxStudenti=new Table(sqlStmnt);
-        System.out.println(checkMaxStudenti);
-        if(checkMaxStudenti.getColCount()>Integer.parseInt(checkMaxStudenti.getData(0,4)))
-            System.out.println("Nu mai sunt locuri la acest curs");
-        else
-        {
-            String sqlStmnt2="select * from curs_student cs join curs as c on cs.curs_id = c.id\n" +
-                    "join student as s on s.id=cs.student_id\n" +
-                    "where s.id="+this.getId()+" and c.id='"+curs_id+"';";
-            String alreadyInCheck=query.getAtr(sqlStmnt2);
-            if(alreadyInCheck.equals("No results."))
-            {
-                query.doUpdate("insert into curs_student(curs_id, student_id) values ("+curs_id+","+this.getId()+");");
-            }
-            else
-                System.out.println("Deja sunteti inscrisi la acest curs");
-        }
-        query.closeConnection();
-    }
     /**
      * returneaza o tabela care contine toate cursurile care au in descriere
      * stringul primit ca input
@@ -200,10 +152,75 @@ public class StudentBackend extends Utilizator{
 
         return finaly;
     }
+
+    public void inscriereCurs(int curs_id)
+    {
+        Query query=new Query();
+        query.init();
+        String sqlStmnt="select * from curs_student join curs on curs_student.curs_id = curs.id\n" +
+                "where curs.id='"+curs_id+"';";
+        Table checkMaxStudenti=new Table(sqlStmnt);
+        if(checkMaxStudenti.getColCount()>Integer.parseInt(checkMaxStudenti.getData(0,4)))
+            System.out.println("Nu mai sunt locuri la acest curs");
+        else
+        {
+            String sqlStmnt2="select * from curs_student cs join curs as c on cs.curs_id = c.id\n" +
+                    "join student as s on s.id=cs.student_id\n" +
+                    "where s.id="+this.getId()+" and c.id='"+curs_id+"';";
+            String alreadyInCheck=query.getAtr(sqlStmnt2);
+            if(alreadyInCheck.equals("No results."))
+            {
+                query.doUpdate("insert into curs_student(curs_id, student_id) values ("+curs_id+","+this.getId()+");");
+            }
+            else
+                System.out.println("Deja sunteti inscrisi la acest curs");
+        }
+        query.closeConnection();
+    }
+
+    public String[] getHours(int activitate_id,int day,int month,int year)
+    {
+        String[] rez = new String[2];
+        String sqlStmnt1="select CONCAT(LPAD(HOUR(data_inceput), 2, '0'), ':', LPAD(MINUTE(data_inceput), 2, '0')) AS time_formatted\n from calendar where activitate_id = "+activitate_id+" and\n" +
+                "day(data_inceput)="+day+" and\n" +
+                "month(data_inceput)="+month+" and\n" +
+                "year(data_inceput)="+year+";";
+        String sqlStmnt2 = "SELECT CONCAT(LPAD(HOUR(data_sfarsit), 2, '0'), ':', LPAD(MINUTE(data_sfarsit), 2, '0')) AS time_formatted " +
+                "FROM calendar " +
+                "WHERE activitate_id = " + activitate_id + " AND " +
+                "DAY(data_sfarsit) = " + day + " AND " +
+                "MONTH(data_sfarsit) = " + month + " AND " +
+                "YEAR(data_sfarsit) = " + year + ";";
+
+        Query query = new Query();
+        query.init();
+        rez[0]= query.getAtr(sqlStmnt1);
+        rez[1]=query.getAtr(sqlStmnt2);
+        query.closeConnection();
+        return rez;
+    }
+
     public Table getEveryCurs()
     {
         return new Table("select * from curs;");
     }
+
+    public Table getMyActivities(int curs_id)
+    {
+        return new Table("select activitate_id, tip from activitate_nota\n" +
+                "join activitate on activitate_nota.activitate_id = activitate.id\n" +
+                "where curs_id="+curs_id+" and student_id="+this.getId()+";");
+    }
+
+    public Table getCursuri()
+    {
+        return new Table("select c.descriere,a.tip as 'activitate',a.id as 'activitate_id' from curs as c join\n" +
+                "    activitate as a on a.curs_id=c.id\n" +
+                "join activitate_nota on a.id = activitate_nota.activitate_id\n" +
+                "join student p on p.id=activitate_nota.student_id\n" +
+                "where student_id="+this.getId()+";\n");
+    }
+
     public Table getAllCurs()
     {
         return new Table("select id, descriere from curs_student join curs on curs_student.curs_id = curs.id\n" +
@@ -213,12 +230,6 @@ public class StudentBackend extends Utilizator{
     {
         return new Table("\n" +
                 "select activitate.id,tip from activitate where curs_id="+curs_id+";");
-    }
-    public Table getMyActivities(int curs_id)
-    {
-        return new Table("select activitate_id, tip from activitate_nota\n" +
-                "join activitate on activitate_nota.activitate_id = activitate.id\n" +
-                "where curs_id="+curs_id+" and student_id="+this.getId()+";");
     }
     public Table getCalendar(int activitate_id)
     {
@@ -303,14 +314,7 @@ public class StudentBackend extends Utilizator{
             query.closeConnection();
         }
     }
-    public Table getCursuri()
-    {
-        return new Table("select c.descriere,a.tip as 'activitate',a.id as 'activitate_id' from curs as c join\n" +
-                "    activitate as a on a.curs_id=c.id\n" +
-                "join activitate_nota on a.id = activitate_nota.activitate_id\n" +
-                "join student p on p.id=activitate_nota.student_id\n" +
-                "where student_id="+this.getId()+";\n");
-    }
+
     /**
      * id il iei cu Integer.parseInt(t.getData(i,0).substring(7).trim());
      * */
@@ -393,7 +397,7 @@ public class StudentBackend extends Utilizator{
                 "WHERE grup_id IN (SELECT id FROM grup WHERE expira < CURDATE());";
         String sqlStmnt1_5=
                 "DELETE FROM grup_studenti\n" +
-                "WHERE grup_id IN (SELECT id FROM grup WHERE expira < current_date());\n";
+                        "WHERE grup_id IN (SELECT id FROM grup WHERE expira < current_date());\n";
         String sqlStmnt2 = "DELETE FROM grup " +
                 "WHERE expira < current_date();";
 
@@ -402,7 +406,28 @@ public class StudentBackend extends Utilizator{
         q.doUpdate(sqlStmnt2);
         q.closeConnection();
     }
-    //activitate grup  //am modificato
+    //activitate grup
+    public Table getActivitatiGrup(int grup_id)
+    {
+        return new Table("select activitate_id,tip from grup_activitate join activitate\n" +
+                "on activitate_id=activitate.id where grup_id="+grup_id+";");
+    }
+    public String getNotaCurs(int curs_id)
+    {
+        Table curs = getNote();
+        float rez=0;
+        String finaly=String.valueOf(rez);
+        for(int i=0;i<curs.getRowCount();++i)
+        {
+            if(Integer.parseInt(curs.getData(i,0))==curs_id)
+            {
+                rez=Float.parseFloat(curs.getData(i,2));
+                finaly=String.valueOf(rez);
+                break;
+            }
+        }
+        return finaly;
+    }
     public void createActivitateNouaGrup(int grup_id,String activitate_nume)
     {
         Query q=new Query();
@@ -420,25 +445,16 @@ public class StudentBackend extends Utilizator{
         q.doUpdate(sqlJoinActivitate);
         q.closeConnection();
     }
-    public Table getRecomendedParticipants(int grup_id)
+
+    public String getCursId(int activitate_id)
     {
         Query q=new Query();
         q.init();
-        String sqlStmnt="select curs.id from curs join grup on grup.curs_id=curs.id where grup.id="+grup_id+";";
-        String curs_id=q.getAtr(sqlStmnt);
+        String rez=q.getAtr("select curs_id from activitate where id="+activitate_id+";");
         q.closeConnection();
-        return new Table("SELECT u.nume, u.prenume\n" +
-                "FROM curs_student cs\n" +
-                "JOIN student s ON cs.student_id = s.id\n" +
-                "JOIN utilizator u ON s.id = u.id\n" +
-                "WHERE cs.curs_id = "+curs_id+"\n" +
-                "  AND NOT EXISTS (\n" +
-                "      SELECT 1\n" +
-                "      FROM grup_studenti gs\n" +
-                "      WHERE gs.student_id = s.id\n" +
-                "        AND gs.grup_id = "+grup_id+"\n" +
-                "  );");
+        return rez;
     }
+
     public void scrieMesaj(int grup_id,String mesaj)
     {
         Query q=new Query();
@@ -447,11 +463,6 @@ public class StudentBackend extends Utilizator{
                 "("+grup_id+","+this.getId()+",'"+mesaj+"');";
         q.doUpdate(sqlStmnt);
         q.closeConnection();
-    }
-    public Table getActivitatiGrup(int grup_id)
-    {
-        return new Table("select activitate_id,tip from grup_activitate join activitate\n" +
-                "on activitate_id=activitate.id where grup_id="+grup_id+";");
     }
 
     public void programareActivitateExistenta(int activitate_id,int start[],int end[])
@@ -478,25 +489,24 @@ public class StudentBackend extends Utilizator{
 
         query.closeConnection();
     }
-    public String[] getHours(int activitate_id,int day,int month,int year)
-    {
-        String[] rez = new String[2];
-        String sqlStmnt1="select CONCAT(LPAD(HOUR(data_inceput), 2, '0'), ':', LPAD(MINUTE(data_inceput), 2, '0')) AS time_formatted\n from calendar where activitate_id = "+activitate_id+" and\n" +
-                "day(data_inceput)="+day+" and\n" +
-                "month(data_inceput)="+month+" and\n" +
-                "year(data_inceput)="+year+";";
-        String sqlStmnt2 = "SELECT CONCAT(LPAD(HOUR(data_sfarsit), 2, '0'), ':', LPAD(MINUTE(data_sfarsit), 2, '0')) AS time_formatted " +
-                "FROM calendar " +
-                "WHERE activitate_id = " + activitate_id + " AND " +
-                "DAY(data_sfarsit) = " + day + " AND " +
-                "MONTH(data_sfarsit) = " + month + " AND " +
-                "YEAR(data_sfarsit) = " + year + ";";
 
-        Query query = new Query();
-        query.init();
-        rez[0]= query.getAtr(sqlStmnt1);
-        rez[1]=query.getAtr(sqlStmnt2);
-        query.closeConnection();
-        return rez;
+    public Table getRecomendedParticipants(int grup_id)
+    {
+        Query q=new Query();
+        q.init();
+        String sqlStmnt="select curs.id from curs join grup on grup.curs_id=curs.id where grup.id="+grup_id+";";
+        String curs_id=q.getAtr(sqlStmnt);
+        q.closeConnection();
+        return new Table("SELECT u.nume, u.prenume\n" +
+                "FROM curs_student cs\n" +
+                "JOIN student s ON cs.student_id = s.id\n" +
+                "JOIN utilizator u ON s.id = u.id\n" +
+                "WHERE cs.curs_id = "+curs_id+"\n" +
+                "  AND NOT EXISTS (\n" +
+                "      SELECT 1\n" +
+                "      FROM grup_studenti gs\n" +
+                "      WHERE gs.student_id = s.id\n" +
+                "        AND gs.grup_id = "+grup_id+"\n" +
+                "  );");
     }
 }

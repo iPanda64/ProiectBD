@@ -5,12 +5,13 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
@@ -23,26 +24,95 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.util.List;
+import java.util.Objects;
+
+import static PlatformaStudiu.LoginPage.globalId;
 
 public class ProfesorCatalog extends Application {
 
-    private String path = "file:/C:/Users/mihai/Desktop/School/An 2 Sem 1/BD/Proiect/ProiectPng/Meniu/";
-    private String fontPath = "file:/C:/Users/mihai/Desktop/School/An 2 Sem 1/BD/Proiect/ProiectPng/Fonts/";
-    /**
-     *
-     * */
-    public void setCatalog(List<String> student){
+    private String path;
+    private String fontPath;
+    private static int currentCourse = 1;
+    private static boolean show = false;
 
+    public void PrintStudents(List<String[]> students, int idC, ProfesorBackend p)
+    {
+        Table t = p.getCatalog();
+        int k = 0;
+        for(int i=0;i<t.getColCount();i++)
+        {
+            String[] s = new String[20];
+            if(Integer.parseInt(t.getData(i,0)) == currentCourse)
+            {
+                k=0;
+                for(int j=2; j<5;j++)
+                {
+                    s[k]=t.getData(i,j);
+                    k++;
+                }
+                students.add(s);
+            }
+        }
     }
 
     public void start(Stage primaryStage) {
+        String f="file:/";
+        path = System.getProperty("user.dir");
+        path += "/Proiect/Meniu/";
+        path = path.replace("\\", "/");
+        f+=path;
+        path=f;
+
+        f="file:/";
+        fontPath=System.getProperty("user.dir");
+        fontPath+="/Proiect/Fonts/";
+        fontPath=fontPath.replace("\\", "/");
+        f+=fontPath;
+        fontPath=f;
+
         Rectangle2D screenBounds = Screen.getPrimary().getBounds();
         double screenWidth = screenBounds.getWidth();
         double screenHeight = screenBounds.getHeight();
 
-        Font SatoshiLight = Font.loadFont(fontPath + "Satoshi-Light.otf", 38);
+        Font Satoshi = Font.loadFont(fontPath + "Satoshi-Light.otf", 38);
 
         AnchorPane root = new AnchorPane();
+
+        show = false;
+
+        ProfesorBackend p = new ProfesorBackend(globalId);
+        Table t = p.getCatalog();
+        //currentCourse = Integer.parseInt(t.getData(0,0));
+
+        Image Bar = new Image(path + "Activitate.png");
+        ImageView searchBar = new ImageView(Bar);
+        searchBar.setFitWidth(770);
+        searchBar.setFitHeight(70);
+        AnchorPane.setTopAnchor(searchBar, 110.0);
+        AnchorPane.setRightAnchor(searchBar, 300.0);
+
+        Table q = p.getOnlyCursuri();
+        String s = new String();
+        for(int i=0;i<q.getColCount();i++)
+        {
+            if(Integer.parseInt(q.getData(i,0))==currentCourse)
+            {
+                s = q.getData(i,1);
+            }
+        }
+        Label welcomeLabel = new Label(s);
+        welcomeLabel.setStyle("-fx-text-fill: white;");
+        welcomeLabel.setFont(Satoshi);
+        AnchorPane.setTopAnchor(welcomeLabel, 120.0);
+        AnchorPane.setLeftAnchor(welcomeLabel, 500.0);
+
+        Image Arrow = new Image(path + "DownArrow.png");
+        ImageView downButton = new ImageView(Arrow);
+        setupButton(downButton, 110.0, 200.0);
+        downButton.setFitWidth(70);
+        downButton.setFitHeight(70);
+
+        root.getChildren().addAll(searchBar, welcomeLabel, downButton);
 
         Image Linie = new Image(path + "Linie.png");
         ImageView devideLine = new ImageView(Linie);
@@ -70,6 +140,12 @@ public class ProfesorCatalog extends Application {
         Image Iesire = new Image(path + "Iesire.png");
         ImageView iesireButton = new ImageView(Iesire);
         setupButton(iesireButton, 750.0, 1220.0);
+
+        Image Download = new Image(path + "Download.png");
+        ImageView downloadButton = new ImageView(Download);
+        setupButton(downloadButton, 100.0, 60.0);
+        downloadButton.setFitWidth(100.0);
+        downloadButton.setFitHeight(100.0);
 
         Image Selection = new Image(path + "Selection.png");
         ImageView currentSel = new ImageView(Selection);
@@ -110,43 +186,41 @@ public class ProfesorCatalog extends Application {
             professorPage.start(primaryStage);
         });
 
-        root.getChildren().addAll(devideLine,profilButton,cursuriButton,catalogButton,activitatiButton,iesireButton);
+        downloadButton.setOnMouseClicked(e -> {
+            p.downloadCatalog();
+        });
 
+        /*
+
+        MenuButton menuButton = new MenuButton(c[0]);
+        menuButton.setText(c[currentCourse]);
+        for (int i = 0; i < cursId; i++) {
+            String itemValue = c[i];
+            int id = i;
+            MenuItem button = new MenuItem(itemValue);
+
+            button.setOnAction(e -> {
+                currentCourse = id;
+                ProfesorCatalog professorPage = new ProfesorCatalog();
+                professorPage.start(primaryStage);
+            });
+
+            menuButton.getItems().add(button);
+        }
+
+         */
+
+        root.getChildren().addAll(devideLine,profilButton,cursuriButton,catalogButton,activitatiButton,iesireButton,downloadButton);
 
         ScrollPane scrollPane = new ScrollPane();
-        GridPane rightList = new GridPane(); // Change to GridPane for better control
-        rightList.setVgap(10); // Vertical gap between rows
-        rightList.setHgap(10); // Horizontal gap between columns
+        GridPane rightList = new GridPane();
+        rightList.setVgap(10);
+        rightList.setHgap(10);
         rightList.setPadding(new Insets(10));
         rightList.setAlignment(Pos.TOP_LEFT);
 
-        // Example data
-        List<String[]> students = List.of(
-                new String[]{"Buleu Mihai-Andrei", "mihai@gmail.com", "2"},
-                new String[]{"Buleu Mihai-Andrei", "mihai@gmail.com", "2"},
-                new String[]{"Buleu Mihai-Andrei", "mihai@gmail.com", "2"},
-                new String[]{"Buleu Mihai-Andrei", "mihai@gmail.com", "2"},
-                new String[]{"Buleu Mihai-Andrei", "mihai@gmail.com", "2"},
-                new String[]{"Souca Vlad-Cristian", "souca@gmail.com", "10"},
-                new String[]{"Souca Vlad-Cristian", "souca@gmail.com", "10"},
-                new String[]{"Souca Vlad-Cristian", "souca@gmail.com", "10"},
-                new String[]{"Souca Vlad-Cristian", "souca@gmail.com", "10"},
-                new String[]{"Souca Vlad-Cristian", "souca@gmail.com", "10"},
-                new String[]{"John Doe", "john@example.com", "8"},
-                new String[]{"John Doe", "john@example.com", "8"},
-                new String[]{"John Doe", "john@example.com", "8"},
-                new String[]{"John Doe", "john@example.com", "8"},
-                new String[]{"Jane Doe", "jane@example.com", "9"}
-        );
-        ProfesorBackend p=new ProfesorBackend(20);
-        Table t=p.getCatalog();
-        System.out.println(t);
-        for(int i=0;i<t.getColCount();++i)
-        {for(int j=0;j<t.getRowCount();++j)
-                System.out.println(t.getData(i,j));
-        System.out.println();}
-
-        System.out.println(p.getActivitatiToateZilele());
+        List<String[]> students = new java.util.ArrayList<>(List.of());
+        PrintStudents(students, Integer.parseInt(t.getData(0,0)),p);
 
         String listStyle = " -fx-font-size: 32px; -fx-font-family: 'SatoshiLight';fx-border-color: white; -fx-border-width: 0 0 0 0;";
 
@@ -161,55 +235,81 @@ public class ProfesorCatalog extends Application {
             Label numberLabel = new Label(student[2]);
             numberLabel.setStyle(listStyle);
 
-            Label delimiter1 = new Label("     ");
+            Label delimiter1 = new Label("                ");
             delimiter1.setStyle("-fx-font-family: 'Satoshi'; -fx-font-size: 28px; -fx-text-fill: white; -fx-padding: 0 20px;");
 
-            Label delimiter2 = new Label(" ");
+            Label delimiter2 = new Label("                ");
             delimiter2.setStyle("-fx-font-family: 'Satoshi'; -fx-font-size: 28px; -fx-text-fill: white; -fx-padding: 0 20px;");
 
-            // Adding columns for each part of the row
-            rightList.add(nameLabel, 0, rowIndex);   // First column: Name
-            rightList.add(delimiter1, 1, rowIndex);   // Second column: First delimiter
-            rightList.add(emailLabel, 2, rowIndex);  // Third column: Email
-            rightList.add(delimiter2, 3, rowIndex);   // Fourth column: Second delimiter
-            rightList.add(numberLabel, 4, rowIndex); // Fifth column: Number
+            rightList.add(nameLabel, 0, rowIndex);
+            rightList.add(delimiter1, 1, rowIndex);
+            rightList.add(emailLabel, 2, rowIndex);
+            rightList.add(delimiter2, 3, rowIndex);
+            rightList.add(numberLabel, 4, rowIndex);
 
-            // Add a line below the row
             Line line = new Line();
             line.setStartX(0);
             line.setStartY(0);
-            line.setEndX(850);  // Width of the line (adjust as needed)
+            line.setEndX(850);
             line.setEndY(0);
             line.setStroke(Color.WHITE);
             line.setStrokeWidth(4);
             line.setStrokeType(StrokeType.CENTERED);
 
-            // Add the line below the current row (on the next row)
             if(rowIndex < students.size() - 1)
             {
-                rightList.add(line, 0, rowIndex , 5, 2); // Span the whole width (5 columns)
+                rightList.add(line, 0, rowIndex , 5, 2);
             }
 
-            rowIndex++;// Move to the next row
+            rowIndex++;
         }
 
-        // Wrap GridPane in ScrollPane
         scrollPane.setContent(rightList);
-        scrollPane.setFitToWidth(true); // Ensure the content width matches the ScrollPane width
-        scrollPane.setPannable(true);   // Allow panning by dragging
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPannable(true);
         scrollPane.setStyle("-fx-background: transparent;");
 
-        // Position the ScrollPane
         AnchorPane.setTopAnchor(scrollPane, 250.0);
         AnchorPane.setRightAnchor(scrollPane, 50.0);
         AnchorPane.setBottomAnchor(scrollPane, 100.0);
         AnchorPane.setLeftAnchor(scrollPane, screenWidth / 2 - 300);
 
-        scrollPane.getStylesheets().add(getClass().getResource("scrollpane-style.css").toExternalForm());
+        String cssPath_cursPane="src/PlatformaStudiu/scrollpane-style.css";
+        java.io.File cssFile_Pane1 = new java.io.File(cssPath_cursPane);
+        try {
+            scrollPane.getStylesheets().add(cssFile_Pane1.toURI().toURL().toExternalForm());
+        }catch (Exception e1) {e1.printStackTrace();}
 
         root.getChildren().add(scrollPane);
 
-        scrollPane.setStyle("-fx-background: transparent;");  // Transparent background
+        scrollPane.setStyle("-fx-background: transparent;");
+
+        downButton.setOnMouseClicked(e -> {
+            show = !show;
+
+            if(show)
+            {
+
+                ScrollPane cursPane = cursList(p,root,primaryStage);
+
+                String cssPath_Pane="src/PlatformaStudiu/styles.css";
+                java.io.File cssFile_Pane = new java.io.File(cssPath_Pane);
+                try {
+                    cursPane.getStylesheets().add(cssFile_Pane.toURI().toURL().toExternalForm());
+                }catch (Exception e1) {e1.printStackTrace();}
+
+                AnchorPane.setTopAnchor(cursPane, 190.0);
+                AnchorPane.setRightAnchor(cursPane, 100.0);
+                AnchorPane.setLeftAnchor(cursPane, 460.0);
+                cursPane.setPrefHeight(700);
+                cursPane.setPrefWidth(1020);
+                root.getChildren().add(cursPane);
+            }
+            else
+            {
+                root.getChildren().removeLast();
+            }
+        });
 
         Scene scene = new Scene(root, screenWidth, screenHeight);
 
@@ -228,6 +328,57 @@ public class ProfesorCatalog extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle("Professor Page");
         primaryStage.show();
+    }
+
+    private ScrollPane cursList(ProfesorBackend a, AnchorPane root, Stage primaryStage) {
+        VBox buttonList = new VBox(10);
+        buttonList.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
+
+        Table t = a.getOnlyCursuri();
+
+        for(int i=0; i<t.getColCount(); i++)
+        {
+            Button customButton = createCustomButton(a,t.getData(i,1), Integer.parseInt(t.getData(i,0)), primaryStage, root);
+            buttonList.getChildren().add(customButton);
+        }
+
+        ScrollPane scrollPane = new ScrollPane(buttonList);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
+
+        return scrollPane;
+    }
+
+    private Button createCustomButton(ProfesorBackend s, String label1Text, int idC, Stage primaryStage,AnchorPane root) {
+        Button button = new Button();
+        button.setStyle("-fx-background-color: transparent; -fx-padding: 0;");
+        Font SatoshiLight = Font.loadFont(fontPath + "Satoshi-Light.otf", 30);
+
+        Image Activitate = new Image(path + "List.png");
+        ImageView imageView = new ImageView(Activitate);
+        imageView.setFitWidth(770);
+        imageView.setFitHeight(70);
+
+        Label label1 = new Label(label1Text);
+        label1.setStyle("-fx-text-fill: black; -fx-font-size: 34px;");
+        label1.setFont(SatoshiLight);
+
+        StackPane labelStack = new StackPane(label1);
+        labelStack.setAlignment(Pos.CENTER);
+
+        StackPane stackPane = new StackPane(imageView, labelStack);
+        stackPane.setStyle("-fx-alignment: center;");
+
+        button.setOnAction(event -> {
+            currentCourse = idC;
+            System.out.println(currentCourse);
+            ProfesorCatalog professorPage = new ProfesorCatalog();
+            professorPage.start(primaryStage);
+        });
+
+        button.setGraphic(stackPane);
+
+        return button;
     }
 
     private void setupButton(ImageView button, double topAnchor, double rightAnchor) {

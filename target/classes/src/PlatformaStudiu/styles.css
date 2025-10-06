@@ -1,0 +1,49 @@
+.scroll-pane {
+    -fx-background-color: transparent; /* Main ScrollPane background */
+    -fx-border-color: transparent; /* Remove any border */
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent; /* Make the internal viewport transparent */
+}
+
+.scroll-pane {
+    -fx-background: transparent;
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background: transparent;
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    /*-fx-background-image: url('vertical-track.png'); // Image for the vertical track*/
+    -fx-background-repeat: stretch;
+    -fx-background-size: contain;
+}
+
+.scroll-pane .scroll-bar:horizontal {
+    -fx-background-color: transparent;
+    /*-fx-background-image: url('horizontal-track.png'); // Image for the horizontal track*/
+    -fx-background-repeat: stretch;
+    -fx-background-size: contain;
+}
+
+.scroll-pane .scroll-bar .increment-button,
+.scroll-pane .scroll-bar .decrement-button {
+    -fx-opacity: 0; /* Makes the up/down or left/right arrows fully transparent */
+    -fx-background-color: transparent; /* Ensures the background is also transparent */
+}
+
+.scroll-pane .scroll-bar .thumb {
+    -fx-background-color: transparent;
+    -fx-background-image: url('Thumb.png'); /* Image for the scrollbar thumb */
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: contain;
+}
+/* style.css */
+* {
+    -fx-font-family: 'SatoshiLight' !important;
+}

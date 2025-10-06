@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Query {
     private final String url = "jdbc:mysql://127.0.0.1:3306/platforma_studiu";

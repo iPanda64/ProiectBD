@@ -9,7 +9,7 @@ public class SuperAdminBackend extends AdminBackend {
         String sqlStatement = "SELECT id,nume,prenume FROM utilizator " +
                 "WHERE nume LIKE '" + nume + "%' " +
                 "AND prenume LIKE '" + prenume + "%' " +
-                "AND tip NOT IN ( 'Super-Administrator');";
+                "AND tip NOT IN ('Super-Administrator');";
         return new Table(sqlStatement);
     }
     @Override
@@ -19,7 +19,7 @@ public class SuperAdminBackend extends AdminBackend {
     }
     public void addAdmin(String CNP,String nume,String prenume,String numar_telefon,String email,String cont_Iban,String numar_contact,String username,String parola)
     {
-        this.addUtilizator("Admininistrator",CNP,nume,prenume,numar_telefon,email,cont_Iban,numar_contact,username,parola);
+        this.addUtilizator("Administrator",CNP,nume,prenume,numar_telefon,email,cont_Iban,numar_contact,username,parola);
     }
     public Table getAllAdmin()
     {

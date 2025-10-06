@@ -7,6 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
@@ -16,12 +17,28 @@ import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+import static PlatformaStudiu.LoginPage.globalId;
+
 public class StudentProfil extends Application {
 
-    private String path = "file:/C:/Users/mihai/Desktop/School/An 2 Sem 1/BD/Proiect/ProiectPng/Meniu/";
-    private String fontPath = "file:/C:/Users/mihai/Desktop/School/An 2 Sem 1/BD/Proiect/ProiectPng/Fonts/";
+    private String path;
+    private String fontPath;
 
     public void start(Stage primaryStage) {
+        String f="file:/";
+        path = System.getProperty("user.dir");
+        path += "/Proiect/Meniu/";
+        path = path.replace("\\", "/");
+        f+=path;
+        path=f;
+
+        f="file:/";
+        fontPath=System.getProperty("user.dir");
+        fontPath+="/Proiect/Fonts/";
+        fontPath=fontPath.replace("\\", "/");
+        f+=fontPath;
+        fontPath=f;
+
         Rectangle2D screenBounds = Screen.getPrimary().getBounds();
         double screenWidth = screenBounds.getWidth();
         double screenHeight = screenBounds.getHeight();
@@ -30,17 +47,130 @@ public class StudentProfil extends Application {
 
         AnchorPane root = new AnchorPane();
 
+        StudentBackend s = new StudentBackend(globalId);
+
+        VBox panel = createPanel();
+        AnchorPane.setTopAnchor(panel, 300.0);
+        AnchorPane.setLeftAnchor(panel, 500.0);
+        root.getChildren().add(panel);
+
+        VBox data = userData(s);
+        AnchorPane.setTopAnchor(data, 300.0);
+        AnchorPane.setLeftAnchor(data, 740.0);
+        root.getChildren().add(data);
+
+        createMenu(root,primaryStage);
+
+        Scene scene = new Scene(root, screenWidth, screenHeight);
+
+        Rectangle background = new Rectangle(0, 0, screenWidth, screenHeight);
+        LinearGradient linearGradient = new LinearGradient(
+                0, 0, 1, 1,
+                true,
+                CycleMethod.NO_CYCLE,
+                new Stop(0, Color.web("#d40055")),
+                new Stop(1, Color.web("#3737c8"))
+        );
+        background.setFill(linearGradient);
+
+        root.getChildren().add(0, background);
+
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Professor Page");
+        primaryStage.show();
+    }
+
+    private VBox userData(StudentBackend s)
+    {
+        VBox vbox = new VBox(25);
+        Font Satoshi = Font.loadFont(fontPath + "Satoshi-Light.otf", 32);
+
+        Table t = s.viewProfile();
+        System.out.println(t);
+
+        Label numeLabel = new Label(t.getData(0,3));
+        numeLabel.setStyle("-fx-text-fill: white;");
+        numeLabel.setFont(Satoshi);
+
+        Label prenumeLabel = new Label(t.getData(0,4));
+        prenumeLabel.setStyle("-fx-text-fill: white;");
+        prenumeLabel.setFont(Satoshi);
+
+        Label cnpLabel = new Label(t.getData(0,2));
+        cnpLabel.setStyle("-fx-text-fill: white;");
+        cnpLabel.setFont(Satoshi);
+
+        Label emailLabel = new Label(t.getData(0,6));
+        emailLabel.setStyle("-fx-text-fill: white;");
+        emailLabel.setFont(Satoshi);
+
+        Label telLabel = new Label(t.getData(0,5));
+        telLabel .setStyle("-fx-text-fill: white;");
+        telLabel .setFont(Satoshi);
+
+        Label ibanLabel = new Label(t.getData(0,7));
+        ibanLabel.setStyle("-fx-text-fill: white;");
+        ibanLabel.setFont(Satoshi);
+
+        Label contractLabel = new Label(t.getData(0,8));
+        contractLabel.setStyle("-fx-text-fill: white;");
+        contractLabel.setFont(Satoshi);
+
+        vbox.getChildren().addAll(numeLabel,prenumeLabel,cnpLabel,emailLabel,telLabel,ibanLabel,contractLabel);
+
+        return vbox;
+    }
+
+    private VBox createPanel()
+    {
+        VBox vbox = new VBox(25);
+        Font Satoshi = Font.loadFont(fontPath + "Satoshi-Medium.otf", 32);
+
+        Label numeLabel = new Label("Nume:");
+        numeLabel.setStyle("-fx-text-fill: white;");
+        numeLabel.setFont(Satoshi);
+
+        Label prenumeLabel = new Label("Prenume:");
+        prenumeLabel.setStyle("-fx-text-fill: white;");
+        prenumeLabel.setFont(Satoshi);
+
+        Label cnpLabel = new Label("CNP:");
+        cnpLabel.setStyle("-fx-text-fill: white;");
+        cnpLabel.setFont(Satoshi);
+
+        Label emailLabel = new Label("Email:");
+        emailLabel.setStyle("-fx-text-fill: white;");
+        emailLabel.setFont(Satoshi);
+
+        Label telLabel = new Label("Nr. Telefon:");
+        telLabel .setStyle("-fx-text-fill: white;");
+        telLabel .setFont(Satoshi);
+
+        Label ibanLabel = new Label("Cont IBAN:");
+        ibanLabel.setStyle("-fx-text-fill: white;");
+        ibanLabel.setFont(Satoshi);
+
+        Label contractLabel = new Label("Nr. Contract:");
+        contractLabel.setStyle("-fx-text-fill: white;");
+        contractLabel.setFont(Satoshi);
+
+        vbox.getChildren().addAll(numeLabel,prenumeLabel,cnpLabel,emailLabel,telLabel,ibanLabel,contractLabel);
+
+        return vbox;
+    }
+
+    private void createMenu(AnchorPane root, Stage primaryStage){
+        Rectangle2D screenBounds = Screen.getPrimary().getBounds();
+        double screenWidth = screenBounds.getWidth();
+        double screenHeight = screenBounds.getHeight();
+
+        Font Satoshi = Font.loadFont(fontPath + "Satoshi-Bold.otf", 38);
+
         Label welcomeLabel = new Label("Bine ai venit, student!");
         welcomeLabel.setStyle("-fx-text-fill: white;");
         welcomeLabel.setFont(Satoshi);
         AnchorPane.setTopAnchor(welcomeLabel, 100.0);
         AnchorPane.setLeftAnchor(welcomeLabel, screenWidth / 2 - 50);
-
-        Label testLabel = new Label("Profil");
-        testLabel.setFont(Satoshi);
-        AnchorPane.setTopAnchor(testLabel , 400.0);
-        AnchorPane.setLeftAnchor(testLabel , screenWidth / 2 - 50);
-        root.getChildren().add(testLabel);
 
         Image Linie = new Image(path + "Linie.png");
         ImageView devideLine = new ImageView(Linie);
@@ -120,23 +250,6 @@ public class StudentProfil extends Application {
 
         root.getChildren().addAll(welcomeLabel,devideLine,profilButton,cursuriButton,cautaButton,activitatiButton,iesireButton,mesajeButton);
 
-        Scene scene = new Scene(root, screenWidth, screenHeight);
-
-        Rectangle background = new Rectangle(0, 0, screenWidth, screenHeight);
-        LinearGradient linearGradient = new LinearGradient(
-                0, 0, 1, 1,
-                true,
-                CycleMethod.NO_CYCLE,
-                new Stop(0, Color.web("#d40055")),
-                new Stop(1, Color.web("#3737c8"))
-        );
-        background.setFill(linearGradient);
-
-        root.getChildren().add(0, background);
-
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Professor Page");
-        primaryStage.show();
     }
 
     private void setupButton(ImageView button, double topAnchor, double rightAnchor) {

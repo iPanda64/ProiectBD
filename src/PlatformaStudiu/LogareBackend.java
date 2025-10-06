@@ -3,9 +3,6 @@ package PlatformaStudiu;
 public class LogareBackend {
     private String username;
     private String parola;
-
-    public static int id;
-
     public LogareBackend() {}
     public  LogareBackend(String username, String parola) {
         this.username = username;
@@ -55,11 +52,6 @@ public class LogareBackend {
         q.init();
         String ret = q.getAtr(sqlStatement);
         q.closeConnection();
-        id=Integer.parseInt(ret);
         return Integer.parseInt(ret);
-    }
-    public static int getStaticId()
-    {
-        return LogareBackend.id;
     }
 }

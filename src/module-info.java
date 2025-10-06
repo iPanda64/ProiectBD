@@ -1,9 +1,9 @@
-module Proiect {
+module PlatformaStudiu {
     requires javafx.controls;
-    requires javafx.fxml;
-    requires java.sql;
+    requires javafx.graphics;
     requires java.desktop;
-    requires mysql.connector.java;
+    requires java.sql;
+    requires jdk.jshell;
 
     exports PlatformaStudiu;
 }

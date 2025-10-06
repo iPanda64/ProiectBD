@@ -19,28 +19,26 @@ import javafx.stage.Stage;
 
 public class LoginPage extends Application {
 
-    private String path = "file:/C:/Users/mihai/Desktop/School/An 2 Sem 1/BD/Proiect/ProiectPng/Login/";
-    private String fontPath = "file:/C:/Users/mihai/Desktop/School/An 2 Sem 1/BD/Proiect/ProiectPng/Fonts/";
-
-
-
+    private String path;
+    private String fontPath;
+    public static int globalId = 0;
     @Override
+
     public void start(Stage primaryStage) {
         String f="file:/";
         String path = System.getProperty("user.dir");
-        path += "/ProiectPng/Login/";
+        path += "/Proiect/Login/";
         path = path.replace("\\", "/");
-        f+=path;
+                f+=path;
         path=f;
 
         f="file:/";
         String fontPath=System.getProperty("user.dir");
-        fontPath+="/ProiectPng/Fonts/";
+        fontPath+="/Proiect/Fonts/";
         fontPath=fontPath.replace("\\", "/");
-        f+=fontPath;
+                f+=fontPath;
         fontPath=f;
-        System.out.println("Current working directory: " + path);
-        System.out.println("Current working directory2: " + fontPath);
+
         Rectangle2D screenBounds = Screen.getPrimary().getBounds();
         double screenWidth = screenBounds.getWidth();
         double screenHeight = screenBounds.getHeight();
@@ -128,36 +126,36 @@ public class LoginPage extends Application {
         AnchorPane.setRightAnchor(loginButton, 570.0);
         loginButton.setPickOnBounds(true);
 
-        loginButton.setOnMouseClicked(e -> { LogareBackend l=new LogareBackend(usernameField.getText(),passwordField.getText());
-            System.out.println(usernameField.getText() + passwordField.getText());
+        loginButton.setOnMouseClicked(e -> {
+            LogareBackend l=new LogareBackend(usernameField.getText(), passwordField.getText());
             System.out.println(l.getId());
             System.out.println(l.getTip());
-        if(l.valid()) {
-            //id este l.getId() -- foloseste pentru a accesa in utilizator
+            if(l.valid()) {
+                globalId = l.getId();
+                //id este l.getId() -- foloseste pentru a accesa in utilizator
+                switch (l.getTip()) {
+                    case "Student":
+                        StudentProfil studentPage = new StudentProfil();
+                        studentPage.start(primaryStage);
+                        break;
+                    case "Profesor":
+                        ProfesorProfil professorPage = new ProfesorProfil();
+                        professorPage.start(primaryStage);
+                        break;
+                    case "Administrator":
+                        AdminProfil adminPage = new AdminProfil();
+                        adminPage.start(primaryStage);
+                        break;
+                    case "Super-Administrator":
+                        SupAdminProfil supAdminProfil = new SupAdminProfil();
+                        supAdminProfil.start(primaryStage);
+                        break;
+                    default:
+                        System.out.println("Nu exista acest tip");
+                        break;
+                }
 
-            System.out.println(LogareBackend.getStaticId());
-            switch (l.getTip()) {
-                case "Student":
-                    StudentProfil studentPage = new StudentProfil();
-                    studentPage.start(primaryStage);
-                    break;
-                case "Profesor":
-                    ProfesorProfil professorPage = new ProfesorProfil();
-                    professorPage.start(primaryStage);
-                    break;
-                case "Administrator":
-                    AdminProfil adminPage = new AdminProfil();
-                    adminPage.start(primaryStage);
-                    break;
-                case "Super-Administrator":
-                    SupAdminProfil supAdminPage = new SupAdminProfil();
-                    supAdminPage.start(primaryStage);
-                    break;
-                default:
-                    System.out.println("Nu exista acest tip");
-                    break;
             }
-        }
         });
 
         root.getChildren().addAll(profileIcon,userIcon,usernameField,lockIcon,passwordField,eyeIcon,textField,loginButton);

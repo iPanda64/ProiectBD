@@ -11,20 +11,20 @@ public class ProfesorBackend extends Utilizator{
     public Table getActivitatiZiCurenta()//nume curs, ponderea
     {
         //'2024-07-25'
-       String sqlStatement="SELECT activitate.id, curs.descriere, activitate.tip, pondere\n" +
-               "FROM calendar\n" +
-               "JOIN activitate ON calendar.activitate_id = activitate.id\n" +
-               "JOIN activitate_profesor ON activitate.id = activitate_profesor.activitate_id\n" +
-               "JOIN profesor ON activitate_profesor.profesor_id = profesor.id\n" +
-               "join curs on activitate.curs_id = curs.id\n" +
-               "WHERE profesor_id = "+this.getId()+ " and date(current_date())=date(calendar.data_inceput)\n";
+        String sqlStatement="SELECT activitate.id, curs.descriere, activitate.tip, pondere\n" +
+                "FROM calendar\n" +
+                "JOIN activitate ON calendar.activitate_id = activitate.id\n" +
+                "JOIN activitate_profesor ON activitate.id = activitate_profesor.activitate_id\n" +
+                "JOIN profesor ON activitate_profesor.profesor_id = profesor.id\n" +
+                "join curs on activitate.curs_id = curs.id\n" +
+                "WHERE profesor_id = "+this.getId()+ " and date(current_date())=date(calendar.data_inceput)\n";
         Table ret=new Table(sqlStatement);
         return ret;
     }
     public Table getActivitatiToateZilele()
     {
 
-        String sqlStatement = "SELECT activitate.id, curs.descriere, activitate.tip " +
+        String sqlStatement = "SELECT activitate.id, curs.descriere, activitate.tip, pondere " +
                 "FROM calendar " +
                 "JOIN activitate ON calendar.activitate_id = activitate.id " +
                 "JOIN activitate_profesor ON activitate.id = activitate_profesor.activitate_id " +
@@ -77,42 +77,6 @@ public class ProfesorBackend extends Utilizator{
         s.addFirst("nume_curs");
         ret.setHeader(s);
         return ret;
-    }
-    public Table getCatalog2()
-    {
-        return new Table("SELECT\n" +
-                "    curs.descriere AS nume_curs,\n" +
-                "    utilizator.nume AS student_nume,\n" +
-                "    utilizator.prenume AS student_prenume,\n" +
-                "    SUM(activitate_nota.nota * activitate.pondere / 100) AS nota_finala_curs\n" +
-                "FROM\n" +
-                "    curs\n" +
-                "JOIN\n" +
-                "    activitate ON activitate.curs_id = curs.id\n" +
-                "JOIN\n" +
-                "    activitate_nota ON activitate.id = activitate_nota.activitate_id\n" +
-                "JOIN\n" +
-                "    student ON activitate_nota.student_id = student.id\n" +
-                "JOIN\n" +
-                "    activitate_profesor ON activitate.id = activitate_profesor.activitate_id\n" +
-                "JOIN\n" +
-                "    utilizator ON utilizator.id = student.id\n" +
-                "WHERE\n" +
-                "    curs.id IN (\n" +
-                "        SELECT DISTINCT curs_id\n" +
-                "        FROM activitate\n" +
-                "        JOIN activitate_profesor ON activitate.id = activitate_profesor.activitate_id\n" +
-                "        WHERE activitate_profesor.profesor_id = "+this.getId()+"\n" +
-                "    )\n" +
-                "GROUP BY\n" +
-                "    curs.id,\n" +
-                "    curs.descriere,\n" +
-                "    utilizator.id,\n" +
-                "    utilizator.nume,\n" +
-                "    utilizator.prenume\n" +
-                "ORDER BY\n" +
-                "    curs.id,\n" +
-                "    utilizator.id;\n");
     }
     public void downloadCatalog()
     {
@@ -189,10 +153,10 @@ public class ProfesorBackend extends Utilizator{
                 "JOIN activitate_profesor ON activitate_profesor.activitate_id = activitate.id\n" +
                 "SET activitate.pondere = "+newProcentage+"\n" +
                 "WHERE activitate.id = "+activitate_id+" AND activitate_profesor.profesor_id = "+this.getId()+";\n";
-       Query q=new Query();
-       q.init();
-       q.doUpdate(sqlStatement);
-       q.closeConnection();
+        Query q=new Query();
+        q.init();
+        q.doUpdate(sqlStatement);
+        q.closeConnection();
     }
     public void downloadActivitatiToateZilele()
     {
@@ -282,30 +246,30 @@ public class ProfesorBackend extends Utilizator{
         if(checkCurs.equals("No results.")) System.out.println("Nu exista acest curs");
         else
         {
-          String sqlStmnt="insert into activitate (curs_id, tip, pondere) VALUES\n" +
-                  "("+checkCurs+",'"+activitate_tip+"',"+pondere+");";
-          query.doUpdate(sqlStmnt);
+            String sqlStmnt="insert into activitate (curs_id, tip, pondere) VALUES\n" +
+                    "("+checkCurs+",'"+activitate_tip+"',"+pondere+");";
+            query.doUpdate(sqlStmnt);
         }
         query.closeConnection();
     }
     public Table getStudentiActivitate(int activitate_id)
     {
-      return new Table("\n" +
-              "select utilizator.id as student_id,nume,prenume,nota from activitate_profesor\n" +
-              "join activitate_nota on activitate_nota.activitate_id=activitate_profesor.activitate_id\n" +
-              "join student on activitate_nota.student_id = student.id\n" +
-              "join utilizator on student.id = utilizator.id\n" +
-              "join activitate on activitate_nota.activitate_id = activitate.id\n" +
-              "join curs on activitate.curs_id = curs.id\n" +
-              "where profesor_id="+this.getId()+" and activitate_nota.activitate_id="+activitate_id+";");
+        return new Table("\n" +
+                "select utilizator.id as student_id,nume,prenume,nota from activitate_profesor\n" +
+                "join activitate_nota on activitate_nota.activitate_id=activitate_profesor.activitate_id\n" +
+                "join student on activitate_nota.student_id = student.id\n" +
+                "join utilizator on student.id = utilizator.id\n" +
+                "join activitate on activitate_nota.activitate_id = activitate.id\n" +
+                "join curs on activitate.curs_id = curs.id\n" +
+                "where profesor_id="+this.getId()+" and activitate_nota.activitate_id="+activitate_id+";");
     }
 
     /**
-    * start si end sunt 2 vectori de lungime 6 care reprezinta
-    * minut, ora, ziua, luna, anul
+     * start si end sunt 2 vectori de lungime 6 care reprezinta
+     * minut, ora, ziua, luna, anul
      * indexare de la 1 la 5
-    * in aceasta ordine
-    * */
+     * in aceasta ordine
+     * */
     public void programareActivitateExistenta(int activitate_id,int start[],int end[])
     {
         Query query = new Query();
@@ -350,6 +314,7 @@ public class ProfesorBackend extends Utilizator{
                 "WHERE activitate_id = "+activitate_id+";";
         return new Table(sqlStmnt);
     }
+
     public String[] getHours(int activitate_id,int day,int month,int year)
     {
         String[] rez = new String[2];
@@ -371,6 +336,7 @@ public class ProfesorBackend extends Utilizator{
         query.closeConnection();
         return rez;
     }
+
     public Table getOnlyCursuri()
     {
         return new Table("select distinct curs.id,curs.descriere from curs join\n" +
@@ -378,12 +344,41 @@ public class ProfesorBackend extends Utilizator{
                 "join activitate_profesor on activitate.id = activitate_profesor.activitate_id\n" +
                 "where profesor_id="+this.getId()+";");
     }
+
+    public Table getCatalog2()
+    {
+        return new Table("SELECT\n" +
+                "    curs.descriere AS nume_curs,\n" +
+                "    utilizator.nume AS student_nume,\n" +
+                "    utilizator.prenume AS student_prenume,\n" +
+                "    SUM(activitate_nota.nota * activitate.pondere / 100) AS nota_finala_curs\n" +
+                "FROM\n" +
+                "    curs\n" +
+                "JOIN\n" +
+                "    activitate ON activitate.curs_id = curs.id\n" +
+                "JOIN\n" +
+                "    activitate_nota ON activitate.id = activitate_nota.activitate_id\n" +
+                "JOIN\n" +
+                "    student ON activitate_nota.student_id = student.id\n" +
+                "JOIN\n" +
+                "    activitate_profesor ON activitate.id = activitate_profesor.activitate_id\n" +
+                "JOIN\n" +
+                "    utilizator ON utilizator.id = student.id\n" +
+                "WHERE\n" +
+                "    curs.id IN (\n" +
+                "        SELECT DISTINCT curs_id\n" +
+                "        FROM activitate\n" +
+                "        JOIN activitate_profesor ON activitate.id = activitate_profesor.activitate_id\n" +
+                "        WHERE activitate_profesor.profesor_id = "+this.getId()+"\n" +
+                "    )\n" +
+                "GROUP BY\n" +
+                "    curs.id,\n" +
+                "    curs.descriere,\n" +
+                "    utilizator.id,\n" +
+                "    utilizator.nume,\n" +
+                "    utilizator.prenume\n" +
+                "ORDER BY\n" +
+                "    curs.id,\n" +
+                "    utilizator.id;\n");
+    }
 }
-/*
-        String sqlStatement="SELECT activitate.id, DISTINCT curs.descriere, activitate.tip, pondere\n" +
-                "FROM calendar\n" +
-                "JOIN activitate ON calendar.activitate_id = activitate.id\n" +
-                "JOIN activitate_profesor ON activitate.id = activitate_profesor.activitate_id\n" +
-                "JOIN profesor ON activitate_profesor.profesor_id = profesor.id\n" +
-                "JOIN curs ON activitate.curs_id = curs.id\n" +
-                "WHERE profesor_id = "+this.getId()+";";*/

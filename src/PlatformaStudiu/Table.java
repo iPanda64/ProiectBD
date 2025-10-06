@@ -50,7 +50,6 @@ public class Table  {
     public String getData(int row, int col) {
         return this.data.get(row).get(col);
     }
-
     @Override
     public String toString() {
         if (header == null || data == null || data.isEmpty()) {
@@ -64,9 +63,8 @@ public class Table  {
         for (int i = 0; i < header.size(); i++) {
             colWidths[i] = header.get(i).length(); // Start with header length
             for (ArrayList<String> row : data) {
-                //System.out.println(i+""+row);
-                //String cell = row.get(i) != null ? row.get(i) : "";
                 String cell = (i < row.size() && row.get(i) != null) ? row.get(i) : "";
+                //String cell = row.get(i) != null ? row.get(i) : "";
                 colWidths[i] = Math.max(colWidths[i], cell.length());
             }
         }

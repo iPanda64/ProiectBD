@@ -10,14 +10,14 @@ public class AdminBackend extends Utilizator{
     public Table cautaUtilizator(String nume,String prenume)
     {
         String sqlStatement = "SELECT id,nume,prenume FROM utilizator " +
-                "WHERE nume LIKE '" + nume + "%' " +
-                "AND prenume LIKE '" + prenume + "%' " +
+                "WHERE nume LIKE '%" + nume + "%' " +
+                "AND prenume LIKE '%" + prenume + "%' " +
                 "AND tip NOT IN ('Administrator', 'Super-Administrator');";
         return new Table(sqlStatement);
     }
     public Table cautaCurs(String descriere)
     {
-        return new Table("SELECT * FROM curs WHERE descriere LIKE '" + descriere + "%';");
+        return new Table("SELECT * FROM curs WHERE descriere LIKE '%" + descriere + "%';");
 
     }
     public Table getAllUtilizatori()
@@ -182,6 +182,7 @@ public class AdminBackend extends Utilizator{
         q.doUpdate("insert into student (id,an,nr_ore) values("+id+","+an+","+nr_ore+");");
         q.closeConnection();
     }
+
     public Table getOnlyCursuri(int profesor_id)
     {
         ProfesorBackend p=new ProfesorBackend(profesor_id);
