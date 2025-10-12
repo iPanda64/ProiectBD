@@ -137,7 +137,11 @@ public class StudentMesaje extends Application {
             if(currentActivity == 0)
             {
                 ScrollPane scrollPane = mesajePanel(s);
-                scrollPane.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+                String scrollPane_Path="src/PlatformaStudiu/styles.css";
+                java.io.File cssFile_scrollPane = new java.io.File(scrollPane_Path);
+                try {
+                    scrollPane.getStylesheets().add(cssFile_scrollPane.toURI().toURL().toExternalForm());
+                }catch (Exception e) {e.printStackTrace();}
                 AnchorPane.setTopAnchor(scrollPane, 320.0);
                 AnchorPane.setBottomAnchor(scrollPane, 240.0);
                 AnchorPane.setLeftAnchor(scrollPane, 475.0);
